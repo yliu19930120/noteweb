@@ -2,51 +2,55 @@
 <html>
 
 	<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<title>mynote</title>
-	<link rel="stylesheet" href="js/lib/layui/css/layui.css">
-	<script src="config/constant.js"></script>
-	<script src="js/lib/layui/layui.js"></script>
-	<script src="js/lib/jquery-3.2.1.min.js"></script>
-	<script src="js/lib/vue.min.js"></script>
-</head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>mynote</title>
+		<link rel="stylesheet" href="js/lib/layui/css/layui.css">
+		<script src="config/constant.js"></script>
+		<script src="js/lib/layui/layui.js"></script>
+		<script src="js/lib/jquery-3.2.1.min.js"></script>
+		<script src="js/lib/vue.min.js"></script>
+	</head>
 
 	<body>
 		<div id="main">
 			<button class="layui-btn" @click="buildRoot">新文件</button>
 			<h5>{{nodeId}}</h5>
 		</div>
-		
+
 	</body>
 
-<script>
-	var vue = new Vue({
-		el: "#main",
-		data: {
-			nodeId: "",
-		},
-		methods: {
-			buildRoot: function(id) {
-				$.ajax({
-					type: "POST",
-					url: host + "/node/buildRoot",
-					success: function(data) {　　　　　　　　　　　　　　
-						var message = $.parseJSON(data); //后台返回的json数据需要转为对象
-						if(message.code==0){
-							alert("文件新建成功");
-							vue.nodeId = message; //把后台返回的JSON数据赋给selectById
-						}else{
-							alert("新建失败")
-						}
-					},
-					error: function() {
-						alert("错误");
-					}
+	<script>
+		$(function() {
 
-				});
+		});
+		var vue = new Vue({
+			el: "#main",
+			data: {
+				nodeId: "",
+			},
+			methods: {
+				buildRoot: function(id) {
+					$.ajax({
+						type: "POST",
+						url: host + "/node/buildRoot",
+						success: function(data) {　　　　　　　　　　　　　　
+							var message = $.parseJSON(data); //后台返回的json数据需要转为对象
+							if(message.code == 0) {
+								alert("文件新建成功");
+								vue.nodeId = message; //把后台返回的JSON数据赋给selectById
+							} else {
+								alert("新建失败")
+							}
+						},
+						error: function() {
+							alert("错误");
+						}
+
+					});
+				}
 			}
-		}
-	})
-</script>
+		})
+	</script>
+
 </html>
