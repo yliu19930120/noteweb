@@ -1,1 +1,1 @@
-var host = 'http://localhost:8080/jersey/webapi'
+var host = '/jersey/webapi'
