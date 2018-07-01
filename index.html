@@ -14,7 +14,8 @@
 
 	<body>
 		<div id="main">
-			<button class="layui-btn" @click="alertMsg">新文件</button>
+			<button class="layui-btn" @click="buildRoot">新文件</button>
+			<h5>{{nodeId}}</h5>
 		</div>
 		
 	</body>
@@ -23,7 +24,7 @@
 	var vue = new Vue({
 		el: "#main",
 		data: {
-			selectById: "",
+			nodeId: "",
 		},
 		methods: {
 			buildRoot: function(id) {
@@ -32,16 +33,18 @@
 					url: host + "/node/buildRoot",
 					success: function(data) {　　　　　　　　　　　　　　
 						var message = $.parseJSON(data); //后台返回的json数据需要转为对象
-						vue.selectById = message; //把后台返回的JSON数据赋给selectById
+						if(message.code==0){
+							alert("文件新建成功");
+							vue.nodeId = message; //把后台返回的JSON数据赋给selectById
+						}else{
+							alert("新建失败")
+						}
 					},
 					error: function() {
 						alert("错误");
 					}
 
 				});
-			},
-			alertMsg: function(id) {
-				alert(123);
 			}
 		}
 	})
