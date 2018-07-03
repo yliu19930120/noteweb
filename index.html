@@ -120,7 +120,7 @@
 						url: host + "/node/nodes/" + this.rootId,
 						success: function(data) {　　　　　　　　　　　　　　
 							if(data.code == 0) {
-								this.nodes = data.nodes; //把后台返回的JSON数据赋给selectById
+								this.nodes = data.nodes; 
 							}
 						},
 						error: function() {
@@ -139,9 +139,7 @@
 						url: host + "/node/newNode/" + this.rootId,
 						data: vue.formData,
 						success: function(data) {　　　　　　　　　　　　　　
-							if(message.code == 0) {
-								this.nodes = data.nodes; //把后台返回的JSON数据赋给selectById
-							}
+						this.listNodes();
 						},
 						error: function() {
 							alert("错误");
