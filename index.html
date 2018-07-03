@@ -114,7 +114,7 @@
 				},
 				listNodes: function(e) {
 					var _this = this;
-					if(this.rootId != 'all') {
+					if(e!=null) {
 						this.rootId = e.target.getAttribute('id');
 						this.rootName = e.target.innerText;
 					}
@@ -152,7 +152,7 @@
 					});
 				},
 				showNewNodeView: function() {
-
+					var _this = this;
 					layer.open({
 						type: 1,
 						offset: '50px',
@@ -162,7 +162,7 @@
 						content: jQuery("#newNode"),
 						btn: ['确定', '取消'],
 						btn1: function(index) {
-							this.newNode();
+							_this.newNode();
 							layer.close(index);
 						}
 					});
