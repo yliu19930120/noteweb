@@ -10,35 +10,97 @@
 		<script src="js/lib/layui/layui.js"></script>
 		<script src="js/lib/jquery-3.2.1.min.js"></script>
 		<script src="js/lib/vue.min.js"></script>
+		<script src="data/testdata.js"></script>
 	</head>
 
-	<body>
-		<div id="main">
-			<button class="layui-btn" @click="buildRoot">新文件</button>
-			<h5>{{nodeId}}</h5>
-		</div>
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin" id="main">
+			<div class="layui-header">
+				<div class="layui-logo">我的笔记</div>
+				<!-- 头部区域（可配合layui已有的水平导航） -->
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item">
+						<input type="text" name="title" required lay-verify="required" placeholder="关键字" autocomplete="off" class="layui-input">
+					</li>
+					<li class="layui-nav-item">
+						<button class="layui-btn">搜索</button>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;"><i class="layui-icon layui-icon-add-1"></i>新文件</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a href="javascript:;" @click="showNewNodeView">新文件</a>
+							</dd>
+							<dd>
+								<a href="javascript:;" @click="showNewNodeView">新文件夹</a>
+							</dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item" v-if="showNewNode">
+						<input type="text" v-model="formData.nodeName" required lay-verify="required" placeholder="文件名" autocomplete="off" class="layui-input">
+					</li>
+				</ul>
+			</div>
 
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side">
+					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+					<ul class="layui-nav layui-nav-tree" lay-filter="test">
+						<li class="layui-nav-item layui-nav-itemed">
+							<a class="" href="#" @click="back"><i class="layui-icon layui-icon-return"></i> {{rootName}}</a>
+							<dl class="layui-nav-child">
+								<dd v-for="node in nodes">
+									<a v-bind:id="node.id" href="#" @click="listNodes">>{{node.nodeName}}</a>
+								</dd>
+							</dl>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="layui-body">
+				<!-- 内容主体区域 -->
+				<div style="padding: 15px;">content</div>
+			</div>
+
+			<div class="layui-footer">
+				<!-- 底部固定区域 -->
+				© layui.com - 底部固定区域
+			</div>
+		</div>
+		<div id="newNode">
+			<input type="text" name="title" v-model="formData.nodeName" lay-verify="required" placeholder="新文件" autocomplete="off" class="layui-input">
+		</div>
 	</body>
+	<!-- 选择部门 -->
 
 	<script>
-		$(function() {
-
+		//JavaScript代码区域
+		layui.use('element', function() {
+			var element = layui.element;
 		});
+		layui.use('layer', function() {
+			var layer = layui.layer;
+		});
+
 		var vue = new Vue({
 			el: "#main",
 			data: {
-				nodeId: "",
+				rootName: "所有文件",
+				rootId: "all",
+				nodes: [],
+				formData: {},
+				showNewNode: false
 			},
 			methods: {
-				buildRoot: function(id) {
+				buildRoot: function() {
 					$.ajax({
 						type: "POST",
 						url: host + "/node/buildRoot",
 						success: function(data) {　　　　　　　　　　　　　　
-							var message = $.parseJSON(data); //后台返回的json数据需要转为对象
-							if(message.code == 0) {
+							if(data.code == 0) {
 								alert("文件新建成功");
-								vue.nodeId = message; //把后台返回的JSON数据赋给selectById
+								this.nodeId = data.id; //把后台返回的JSON数据赋给selectById
 							} else {
 								alert("新建失败")
 							}
@@ -48,7 +110,66 @@
 						}
 
 					});
+				},
+				listNodes: function(e) {
+					if(this.rootId != 'all') {
+						this.rootId = e.target.getAttribute('id');
+					}
+					$.ajax({
+						type: "POST",
+						url: host + "/node/nodes/" + this.rootId,
+						success: function(data) {　　　　　　　　　　　　　　
+							if(message.code == 0) {
+								this.nodes = data.nodes; //把后台返回的JSON数据赋给selectById
+							}
+						},
+						error: function() {
+							alert("错误");
+						}
+
+					});
+					this.rootName = e.target.innerText;
+				},
+				newNode: function() {
+					if(this.rootId=='all'){
+						this.buildRoot();
+					}
+					$.ajax({
+						type: "POST",
+						url: host + "/node/newNode/" + this.rootId,
+						data: vue.formData,
+						success: function(data) {　　　　　　　　　　　　　　
+							if(message.code == 0) {
+								this.nodes = data.nodes; //把后台返回的JSON数据赋给selectById
+							}
+						},
+						error: function() {
+							alert("错误");
+						}
+
+					});
+				},
+				showNewNodeView: function() {
+					layer.open({
+						type: 1,
+						offset: '50px',
+						title: "新文件",
+						shade: 0,
+						shadeClose: false,
+						content: jQuery("#newNode"),
+						btn: ['确定', '取消'],
+						btn1: function(index) {
+							this.newNode();
+							layer.close(index);
+						}
+					});
+				},
+				back: function() {
+					alert(123);
 				}
+			},
+			created: function() {
+				this.listNodes();
 			}
 		})
 	</script>
