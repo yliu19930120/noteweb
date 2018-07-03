@@ -116,7 +116,7 @@
 						this.rootId = e.target.getAttribute('id');
 					}
 					$.ajax({
-						type: "POST",
+						type: "GET",
 						url: host + "/node/nodes/" + this.rootId,
 						success: function(data) {　　　　　　　　　　　　　　
 							if(message.code == 0) {
