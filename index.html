@@ -119,7 +119,7 @@
 						type: "GET",
 						url: host + "/node/nodes/" + this.rootId,
 						success: function(data) {　　　　　　　　　　　　　　
-							if(message.code == 0) {
+							if(data.code == 0) {
 								this.nodes = data.nodes; //把后台返回的JSON数据赋给selectById
 							}
 						},
