@@ -94,13 +94,14 @@
 			},
 			methods: {
 				buildRoot: function() {
+					var _this = this;
 					$.ajax({
 						type: "POST",
 						url: host + "/node/buildRoot",
 						success: function(data) {　　　　　　　　　　　　　　
 							if(data.code == 0) {
 								alert("文件新建成功");
-								this.nodeId = data.id; //把后台返回的JSON数据赋给selectById
+								_this.nodeId = data.id; //把后台返回的JSON数据赋给selectById
 							} else {
 								alert("新建失败")
 							}
@@ -112,6 +113,7 @@
 					});
 				},
 				listNodes: function(e) {
+					var _this = this;
 					if(this.rootId != 'all') {
 						this.rootId = e.target.getAttribute('id');
 						this.rootName = e.target.innerText;
@@ -121,7 +123,7 @@
 						url: host + "/node/nodes/" + this.rootId,
 						success: function(data) {　　　　　　　　　　　　　　
 							if(data.code == 0) {
-								this.nodes = data.nodes; 
+								_this.nodes = data.nodes; 
 							}
 						},
 						error: function() {
@@ -132,6 +134,7 @@
 					
 				},
 				newNode: function() {
+					var _this = this;
 					if(this.rootId=='all'){
 						this.buildRoot();
 					}
@@ -140,7 +143,7 @@
 						url: host + "/node/newNode/" + this.rootId,
 						data: vue.formData,
 						success: function(data) {　　　　　　　　　　　　　　
-						this.listNodes();
+						_this.listNodes();
 						},
 						error: function() {
 							alert("错误");
@@ -149,6 +152,7 @@
 					});
 				},
 				showNewNodeView: function() {
+
 					layer.open({
 						type: 1,
 						offset: '50px',
