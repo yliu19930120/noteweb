@@ -114,6 +114,7 @@
 				listNodes: function(e) {
 					if(this.rootId != 'all') {
 						this.rootId = e.target.getAttribute('id');
+						this.rootName = e.target.innerText;
 					}
 					$.ajax({
 						type: "GET",
@@ -128,7 +129,7 @@
 						}
 
 					});
-					this.rootName = e.target.innerText;
+					
 				},
 				newNode: function() {
 					if(this.rootId=='all'){
