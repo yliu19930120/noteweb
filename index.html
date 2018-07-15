@@ -28,10 +28,10 @@
 						<a href="javascript:;"><i class="layui-icon layui-icon-add-1"></i>新文件</a>
 						<dl class="layui-nav-child">
 							<dd>
-								<a href="javascript:;" @click="showNewNodeView(1)">新文件</a>
+								<a href="javascript:;" @click="showNewNodeView(2)">新文件夹</a>
 							</dd>
 							<dd>
-								<a href="javascript:;" @click="showNewNodeView(2)">新文件夹</a>
+								<a href="javascript:;" @click="showNewNodeView(1)">新文件</a>
 							</dd>
 						</dl>
 					</li>
@@ -60,36 +60,42 @@
 					</li>
 				</ul>
 			</div>
-			<div class="layui-side layui-bg-black">
-				<div class="layui-side" v-if="login">
-					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-					<ul class="layui-nav layui-nav-tree">
-						<li class="layui-nav-item layui-nav-itemed">
-							<a class="" href="javascript:;" @click="back"><i class="layui-icon layui-icon-return"></i> {{currentNode.nodeName}}</a>
-							<dl class="layui-nav-child">
-								<dd v-for="node in children">
-									<a v-bind:id="node.id" href="javascript:;" @click="setRoot">{{node.nodeName}}</a>
-								</dd>
-							</dl>
-						</li>
-					</ul>
+			<div class="layui-container layui-bg-gray">
+				<div class="layui-row">
+					<div class="layui-col-md12">
+						<a class="" href="javascript:;" @click="back"><i class="layui-icon layui-icon-return"></i>{{currentNode.nodeName}}</a>
+					</div>
+				</div>
+				<div class="layui-row" v-for="node in children" :key="node.id">
+					<div class="layui-col-md4">
+						<a href="javascript:;" @click="setRoot(node.id)">
+							<i class="layui-icon" v-bind:class="node_tyep[node.nodeType]"></i> {{node.nodeName}}
+						</a>
+					</div>
+					<div class="layui-col-md4">
+						<a href="javascript:;"  @click="deleteNode(node.id)">
+							<i class="layui-icon layui-icon-delete"></i>
+						</a>
+						<a href="javascript:;">
+							<i class="layui-icon layui-icon-edit"></i>
+						</a>
+					</div>
+					<div class="layui-col-md4">
+						<a href="javascript:;">
+							{{node.creatDate}}
+						</a>
+					</div>
 				</div>
 			</div>
-
-			<div class="layui-body">
-				<!-- 内容主体区域 -->
-				<div style="padding: 15px;">content</div>
-			</div>
-
 			<div class="layui-footer">
 				<!-- 底部固定区域 -->
 				© layui.com - 底部固定区域
 			</div>
-			<div id="newNode" v-if="popNewNode">
+			<div id="newNode" v-if="viewNewNode">
 				<input type="text" name="title" v-model="formData.nodeName" lay-verify="required" placeholder="新文件" autocomplete="off" class="layui-input">
-				<input hidden="true" v-model="formData.nodeType"/>
+				<input hidden="true" v-model="formData.nodeType" />
 			</div>
-			<div id="loginView" v-if="popLogin">
+			<div id="loginView">
 				<input type="text" name="title" v-model="user.account" lay-verify="required" placeholder="用户名" autocomplete="off" class="layui-input">
 				<input type="password" name="password" v-model="user.password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
 			</div>
@@ -116,8 +122,7 @@
 				currentNode: {},
 				children: [],
 				formData: {},
-				popNewNode:false,
-				popLogin:false
+				viewNewNode:false
 			},
 			methods: {
 				getUser: function() {
@@ -189,9 +194,9 @@
 					var _this = this;
 					$.post(host + "/user/logout", function(data) {
 						if(data.code == 0) {
-								_this.user = {};
-								_this.login = false;
-							}
+							_this.user = {};
+							_this.login = false;
+						}
 					});
 
 				},
@@ -231,8 +236,8 @@
 				},
 				showNewNodeView: function(nodeType) {
 					var _this = this;
-					_this.popNewNode = true;
 					_this.formData.nodeType = nodeType;
+					_this.viewNewNode = true;
 					layer.open({
 						type: 1,
 						offset: '50px',
@@ -244,12 +249,16 @@
 						btn1: function(index) {
 							_this.newNode();
 							layer.close(index);
+						},
+						end: function() {
+							_this.viewNewNode = false;
 						}
 					});
+
 				},
 				showLoginView: function() {
 					var _this = this;
-					_this.popLogin = true;
+
 					layer.open({
 						type: 1,
 						offset: '50px',
@@ -272,10 +281,29 @@
 					var _this = this;
 					_this.listNodes(_this.currentNode.father);
 				},
-				setRoot:function(e){
+				setRoot: function(id) {
 					var _this = this;
-					var id = e.target.getAttribute('id');
 					_this.listNodes(id);
+				},
+				deleteNode: function(id) {
+					var _this = this;
+					$.ajax({
+						type: "POST",
+						url: host + "/node/deleteNode/"+id,
+						contentType: 'application/json',
+						success: function(data) {　　　　　　　　　　　　　　
+							if(data.code == 0) {
+								layer.alert('删除成功');  
+								_this.listNodes(_this.currentNode.id);
+							} else {
+								alert("登录失败");
+							}
+						},
+						error: function() {
+							alert("错误");
+						}
+
+					});
 				}
 			},
 			created: function() {
