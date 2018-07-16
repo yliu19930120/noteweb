@@ -304,6 +304,22 @@
 						}
 
 					});
+				},
+				updateNode: function(id) {
+					var _this = this;
+					$.ajax({
+						type: "POST",
+						url: host + "/node/updateNode/" + id,
+						contentType: 'application/json',
+						data: JSON.stringify(vue.formData),
+						success: function(data) {　　　　　　　　　　　　　　
+							_this.listNodes(_this.currentNode.id);
+						},
+						error: function() {
+							alert("错误");
+						}
+
+					});
 				}
 			},
 			created: function() {
